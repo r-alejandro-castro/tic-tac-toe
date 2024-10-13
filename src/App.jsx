@@ -1,28 +1,13 @@
 import { useState } from "react";
-import useCheckWinner from './hooks/useCheckWinner';
+import confetti from "canvas-confetti";
 
-// Turnos
-const Turns = {
-  X: "x",
-  O: "o",
-};
-
-const checkWinner = useCheckWinner
+import { Turns } from "./constants.js";
+import { checkWinnerFrom} from './logic/board.js';
+import { WinnerModal } from "./components/WinnerModal.jsx";
+import { Square } from "./components/Square.jsx";
 
 // Componente de cuadrado
-const Square = ({ children, isSelected, updateBoard, index }) => {
-  const className = `square ${isSelected ? "is-selected" : ""}`;
 
-  const handleClick = () => {
-    updateBoard(index);
-  };
-
-  return (
-    <div onClick={handleClick} className={className}>
-      {children}
-    </div>
-  );
-};
 
 function App() {
   // Estado del tablero
@@ -33,6 +18,18 @@ function App() {
 
   // Estado del ganador
   const [winner, setWinner] = useState(null);
+
+  // Resetea el tablero
+  const resetGame = () => {
+    setBoard(Array(9).fill(null));
+    setTurn(Turns.X);
+    setWinner(null);
+  };
+
+  // Comprueba si el tablero está terminado
+  const checkEndGame = (newBoard) => {
+    return newBoard.every((square) => square !== null);
+  };
 
   // Actualiza el tablero
   const updateBoard = (index) => {
@@ -49,11 +46,16 @@ function App() {
     setTurn(newTurn);
 
     // Comprueba si hay ganador
-    const newWinner = checkWinner(newBoard);
+    const newWinner = checkWinnerFrom(newBoard);
+    
     if (newWinner) {
+      confetti();
       setWinner(newWinner);
-      alert(`El jugador ${newWinner} ha ganado!`);
     }
+    else if (checkEndGame(newBoard)) {
+      setWinner(false); //empate
+    };
+
   };
 
   return (
@@ -62,10 +64,10 @@ function App() {
 
       {/* Tablero de juego */}
       <section className="game">
-        {board.map((_, index) => {
+        {board.map((square, index) => {
           return (
             <Square key={index} index={index} updateBoard={updateBoard}>
-              {board[index]}
+              {square}
             </Square>
           );
         })}
@@ -78,7 +80,11 @@ function App() {
       </section>
 
       {/* Mostrar el ganador si existe */}
-      {winner && <h2>Winner is: {winner}</h2>}
+      <WinnerModal resetGame={resetGame} winner={winner} />
+
+      <button onClick={resetGame}>Reiniciar</button>
+
+
     </main>
   );
 }
