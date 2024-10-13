@@ -1,8 +1,6 @@
-// Turnos
-
 export const Turns = {
-    X: "x",
-    O: "o",
+    X: "❌",
+    O: "⭕",
 };
 
 export const winningCombinations = [
