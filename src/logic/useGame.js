@@ -6,7 +6,6 @@ import { checkWinnerFrom, checkEndGame } from './board.js';
 export const useGame = () => {
 
     // Estado del tablero
-    // const [board, setBoard] = useState(Array(9).fill(null));
     const [board, setBoard] = useState(() =>{
         const boardFromStorage = window.localStorage.getItem('board')
         if (boardFromStorage)
@@ -15,7 +14,6 @@ export const useGame = () => {
     });
 
     // Estado del turno
-    // const [turn, setTurn] = useState(Turns.X);
     const [turn, setTurn] = useState(() => {
         const turnFromStorage = window.localStorage.getItem('turn')
         return turnFromStorage ?? Turns.X
