@@ -6,10 +6,20 @@ import { checkWinnerFrom, checkEndGame } from './board.js';
 export const useGame = () => {
 
     // Estado del tablero
-    const [board, setBoard] = useState(Array(9).fill(null));
+    // const [board, setBoard] = useState(Array(9).fill(null));
+    const [board, setBoard] = useState(() =>{
+        const boardFromStorage = window.localStorage.getItem('board')
+        if (boardFromStorage)
+            return JSON.parse(boardFromStorage)
+            return Array(9).fill(null)
+    });
 
     // Estado del turno
-    const [turn, setTurn] = useState(Turns.X);
+    // const [turn, setTurn] = useState(Turns.X);
+    const [turn, setTurn] = useState(() => {
+        const turnFromStorage = window.localStorage.getItem('turn')
+        return turnFromStorage ?? Turns.X
+    });
 
     // Estado del ganador
     const [winner, setWinner] = useState(null);
@@ -19,6 +29,8 @@ export const useGame = () => {
         setBoard(Array(9).fill(null));
         setTurn(Turns.X);
         setWinner(null);
+
+        window.localStorage.clear();
     };
 
     // Actualiza el tablero
@@ -34,6 +46,10 @@ export const useGame = () => {
         // Cambia el turno
         const newTurn = turn === Turns.X ? Turns.O : Turns.X;
         setTurn(newTurn);
+
+        // guarda el turno
+        window.localStorage.setItem("board", JSON.stringify(newBoard));
+        window.localStorage.setItem("turn", newTurn);
 
         // Comprueba si hay ganador
         const newWinner = checkWinnerFrom(newBoard);
